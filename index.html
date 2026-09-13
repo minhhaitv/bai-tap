@@ -133,9 +133,9 @@
 <body>
 
   <div class="container">
-    <header>
-      <h1>Danh Mục Tiện Ích & Biểu Mẫu</h1>
-      <p>Cập nhật tự động từ Google Sheets</p>
+    <header style="text-align: center; margin-bottom: 20px;">
+      <img src="banner.png" alt="Banner Kho tài liệu" style="width: 100%; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); margin-bottom: 12px;">
+      <p style="font-size: 0.85rem; color: var(--text-sub);">Cập nhật tự động từ Google Sheets</p>
     </header>
 
     <div class="search-box">
@@ -156,18 +156,20 @@
 
     async function loadData() {
       const statusEl = document.getElementById('status');
-      // Sử dụng Google Visualization API để lấy JSON
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+          // 1. Thêm &headers=1
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=1`;
 
       try {
         const response = await fetch(url);
         const text = await response.text();
-        
-        // Cắt bỏ phần bọc callback của Visualization API để lấy JSON thuần
+    
         const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
         const json = JSON.parse(jsonString);
 
+        // 2. Dự phòng thêm .slice(1) nếu vẫn bị dính dòng tiêu đề:
+        // const rows = json.table.rows.slice(1);
         const rows = json.table.rows;
+
         allItems = rows.map(r => {
           const cells = r.c;
           return {
@@ -185,6 +187,7 @@
         statusEl.textContent = 'Không thể tải dữ liệu. Vui lòng kiểm tra quyền chia sẻ của Sheet.';
       }
     }
+
 
     function renderItems(items) {
       const container = document.getElementById('linkContainer');
