@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Kho tài liệu học tập</title>
+  <title>Kho Trắc Nghiệm Trực Tuyến</title>
   <style>
     :root {
       --primary-color: #2563eb;
       --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
+      --card-bg: #f0f7ff;         /* Xanh nước biển nhạt */
+      --card-border: #bae6fd;     /* Viền mảnh xanh nước biển */
+      --text-blue: #1d4ed8;       /* Blue đậm cho tên bài */
+      --badge-pink-text: #be185d; /* Hồng đậm */
+      --badge-pink-bg: #fce7f3;   /* Hồng nhạt highlight */
       --text-sub: #64748b;
       --border-color: #e2e8f0;
     }
@@ -23,105 +26,168 @@
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-main);
-      padding: 16px;
+      color: #1e293b;
+      padding: 12px;
       display: flex;
       justify-content: center;
     }
 
     .container {
       width: 100%;
-      max-width: 500px; /* Tối ưu cho màn hình di động */
-      margin-top: 10px;
+      max-width: 500px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
 
-    header h1 {
-      font-size: 1.4rem;
-      color: var(--text-main);
+    header img {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
       margin-bottom: 6px;
+      display: block;
     }
 
     header p {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-sub);
     }
 
-    /* Thanh tìm kiếm */
+    /* Thanh Tab cuộn ngang trên di động */
+    .tabs-wrapper {
+      position: sticky;
+      top: 0;
+      background: var(--bg-color);
+      padding: 6px 0 10px 0;
+      z-index: 10;
+    }
+
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none; /* Ẩn scrollbar Firefox */
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 2px;
+    }
+
+    .tabs-container::-webkit-scrollbar {
+      display: none; /* Ẩn scrollbar Chrome/Safari */
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      background: #ffffff;
+      color: var(--text-sub);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Ô tìm kiếm */
     .search-box {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .search-box input {
       width: 100%;
-      padding: 12px 14px;
+      padding: 10px 14px;
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       outline: none;
       background: #ffffff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .search-box input:focus {
       border-color: var(--primary-color);
     }
 
-    /* Danh sách link */
+    /* Danh sách link bài trắc nghiệm */
     .link-list {
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
 
-    .link-card {
-      display: block;
+    .quiz-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
       background-color: var(--card-bg);
-      padding: 14px 16px;
+      border: 1px solid var(--card-border);
       border-radius: 12px;
+      padding: 14px 16px;
       text-decoration: none;
-      color: inherit;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-      transition: transform 0.1s ease, border-color 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .link-card:active {
+    .quiz-card:active {
       transform: scale(0.98);
-      background-color: #f1f5f9;
+      background-color: #e0f2fe;
     }
 
-    .badge {
+    /* Icon Checklist bên trái */
+    .quiz-icon {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      margin-top: 2px;
+      color: var(--primary-color);
+    }
+
+    .quiz-content {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    /* Highlight chủ đề phía trên */
+    .quiz-category {
       display: inline-block;
       font-size: 0.72rem;
-      font-weight: 600;
-      color: var(--primary-color);
-      background-color: #eff6ff;
-      padding: 2px 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--badge-pink-text);
+      background-color: var(--badge-pink-bg);
+      padding: 3px 8px;
       border-radius: 6px;
       margin-bottom: 6px;
-      text-transform: uppercase;
     }
 
-    .title {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #0f172a;
-    }
-
-    .desc {
-      font-size: 0.82rem;
-      color: var(--text-sub);
+    /* Tiêu đề bài trắc nghiệm */
+    .quiz-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-blue);
       line-height: 1.35;
+      margin-bottom: 4px;
     }
 
-    /* Trạng thái tải / lỗi */
+    .quiz-desc {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.3;
+    }
+
+    /* Trạng thái tải / thông báo */
     .status-msg {
       text-align: center;
       padding: 30px;
@@ -133,105 +199,154 @@
 <body>
 
   <div class="container">
-    <header style="text-align: center; margin-bottom: 20px;">
-      <img src="banner.png" alt="Banner Kho tài liệu" style="width: 100%; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); margin-bottom: 12px;">
-      <p style="font-size: 0.85rem; color: var(--text-sub);">Cập nhật tự động từ Google Sheets</p>
+    <header>
+      <img src="banner.png" alt="Banner Kho tài liệu">
     </header>
 
+    <!-- Thanh chuyển Tab 7 môn -->
+    <div class="tabs-wrapper">
+      <div class="tabs-container" id="tabsList">
+        <button class="tab-btn active" data-sheet="Toan">Toán</button>
+        <button class="tab-btn" data-sheet="Anh">Anh</button>
+        <button class="tab-btn" data-sheet="Lich su">Lịch sử</button>
+        <button class="tab-btn" data-sheet="Dia ly">Địa lý</button>
+        <button class="tab-btn" data-sheet="KHTN">KHTN</button>
+        <button class="tab-btn" data-sheet="Tin hoc">Tin học</button>
+      </div>
+    </div>
+
+    <!-- Thanh tìm kiếm nhanh -->
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Tìm kiếm biểu mẫu hoặc liên kết...">
+      <input type="text" id="searchInput" placeholder="Tìm kiếm bài trắc nghiệm hoặc chủ đề...">
     </div>
 
     <div id="status" class="status-msg">Đang tải dữ liệu...</div>
-    <div id="linkContainer" class="link-list"></div>
+    <div id="quizContainer" class="link-list"></div>
   </div>
 
   <script>
-    // === CẤU HÌNH TẠI ĐÂY ===
-    // Thay chuỗi bên dưới bằng SHEET_ID của bạn
+    // === CẤU HÌNH GOOGLE SHEET ===
     const SHEET_ID = '1m-MhgFAnyaSnyHyoT3L_HXS1Qu6LrhuJ4ymBmT2yt4Y';
-    const SHEET_NAME = 'Trang tính1'; // Tên sheet (mặc định là Sheet1 hoặc Trang tính1)
 
-    let allItems = [];
+    let currentSheetName = 'Toan';
+    let currentItems = [];
 
-    async function loadData() {
+    // Icon Checklist SVG
+    const CHECKLIST_ICON = `
+      <svg class="quiz-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        <line x1="5" y1="9" x2="6" y2="9"/>
+        <line x1="5" y1="13" x2="6" y2="13"/>
+        <line x1="5" y1="17" x2="6" y2="17"/>
+      </svg>
+    `;
+
+    // Hàm tải dữ liệu theo từng sheet môn học
+    async function fetchSheetData(sheetName) {
       const statusEl = document.getElementById('status');
-          // 1. Thêm &headers=1
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=1`;
+      const container = document.getElementById('quizContainer');
+      
+      statusEl.style.display = 'block';
+      statusEl.textContent = `Đang tải bài tập môn ${sheetName}...`;
+      container.innerHTML = '';
+
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&headers=1`;
 
       try {
         const response = await fetch(url);
         const text = await response.text();
-    
+        
         const jsonString = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
         const json = JSON.parse(jsonString);
-
-        // 2. Dự phòng thêm .slice(1) nếu vẫn bị dính dòng tiêu đề:
-        // const rows = json.table.rows.slice(1);
         const rows = json.table.rows;
 
-        allItems = rows.map(r => {
+        // Cột: Title (0) | URL (1) | Category (2) | Description (3)
+        currentItems = rows.map(r => {
           const cells = r.c;
           return {
-            title: cells[0] ? cells[0].v : '',
-            url: cells[1] ? cells[1].v : '#',
-            category: cells[2] ? cells[2].v : '',
-            desc: cells[3] ? cells[3].v : ''
+            title: cells && cells[0] ? cells[0].v : '',
+            url: cells && cells[1] ? cells[1].v : '',
+            category: cells && cells[2] ? cells[2].v : '',
+            desc: cells && cells[3] ? cells[3].v : '',
+            status: cells && cells[4] ? cells[4].v : ''
           };
-        }).filter(item => item.title && item.url && item.url !== '#');
+        }).filter(item => item.title && item.url && item.url !== '#' && String(item.status).trim() === '1');
 
         statusEl.style.display = 'none';
-        renderItems(allItems);
+        renderCards(currentItems);
       } catch (err) {
         console.error(err);
-        statusEl.textContent = 'Không thể tải dữ liệu. Vui lòng kiểm tra quyền chia sẻ của Sheet.';
+        statusEl.textContent = `Chưa có dữ liệu hoặc không thể truy cập sheet "${sheetName}".`;
       }
     }
 
-
-    function renderItems(items) {
-      const container = document.getElementById('linkContainer');
+    // Hiển thị danh sách thẻ trắc nghiệm
+    function renderCards(items) {
+      const container = document.getElementById('quizContainer');
       container.innerHTML = '';
 
       if (items.length === 0) {
-        container.innerHTML = '<div class="status-msg">Không tìm thấy kết quả phù hợp.</div>';
+        container.innerHTML = '<div class="status-msg">Không có bài trắc nghiệm nào phù hợp.</div>';
         return;
       }
 
       items.forEach(item => {
         const card = document.createElement('a');
-        card.className = 'link-card';
+        card.className = 'quiz-card';
         card.href = item.url;
         card.target = '_blank';
         card.rel = 'noopener noreferrer';
 
-        let html = '';
+        let html = CHECKLIST_ICON;
+        html += '<div class="quiz-content">';
+        
         if (item.category) {
-          html += `<span class="badge">${item.category}</span>`;
+          html += `<div class="quiz-category">${item.category}</div>`;
         }
-        html += `<div class="title">${item.title}</div>`;
+        
+        html += `<div class="quiz-title">${item.title}</div>`;
+        
         if (item.desc) {
-          html += `<div class="desc">${item.desc}</div>`;
+          html += `<div class="quiz-desc">${item.desc}</div>`;
         }
+        
+        html += '</div>';
 
         card.innerHTML = html;
         container.appendChild(card);
       });
     }
 
-    // Lọc tìm kiếm thời gian thực
-    document.getElementById('searchInput').addEventListener('input', (e) => {
-      const keyword = e.target.value.toLowerCase().trim();
-      const filtered = allItems.filter(item => 
-        item.title.toLowerCase().includes(keyword) || 
-        item.category.toLowerCase().includes(keyword) ||
-        item.desc.toLowerCase().includes(keyword)
-      );
-      renderItems(filtered);
+    // Xử lý sự kiện bấm chuyển tab môn học
+    document.getElementById('tabsList').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (!btn || btn.classList.contains('active')) return;
+
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Cuộn tab được chọn vào giữa tầm nhìn trên mobile
+      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+
+      document.getElementById('searchInput').value = '';
+      currentSheetName = btn.dataset.sheet;
+      fetchSheetData(currentSheetName);
     });
 
-    // Gọi tải dữ liệu khi vừa vào trang
-    loadData();
+    // Lọc tìm kiếm theo từ khóa trong môn đang mở
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const keyword = e.target.value.toLowerCase().trim();
+      const filtered = currentItems.filter(item => 
+        (item.title && item.title.toLowerCase().includes(keyword)) ||
+        (item.category && item.category.toLowerCase().includes(keyword)) ||
+        (item.desc && item.desc.toLowerCase().includes(keyword))
+      );
+      renderCards(filtered);
+    });
+
+    // Khởi chạy mặc định với tab Toán
+    fetchSheetData(currentSheetName);
   </script>
 </body>
 </html>
